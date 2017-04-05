@@ -1,0 +1,21 @@
+/* =========
+Your custom styles go here
+ ========= */
+.swiper-slide div{
+  height: 12rem;
+  background-size: 100% auto;
+  background-repeat: no-repeat;
+}
+
+.searchbar{
+  background: transparent;
+  padding: 0;
+}
+
+.searchbar input[type=search] {
+  background-color: #ededed;
+}
+
+.page{
+  background-color: #fff;
+}
