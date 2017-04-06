@@ -1,5 +1,5 @@
 <template>
-  <f7-page pull-to-refresh @ptr:refresh="onRefresh" @ptr:done="refreshDone" infinite-scroll @infinite="onInfiniteScroll">
+  <f7-page navbar-fixed pull-to-refresh @ptr:refresh="onRefresh" @ptr:done="refreshDone" infinite-scroll @infinite="onInfiniteScroll">
 
     <!-- Navbar -->
     <f7-navbar>
@@ -21,7 +21,7 @@
     <!-- Page Content -->
     
     <f7-swiper pagination>
-      <f7-swiper-slide><div :data-background="title_ad" class="lazy"></div></f7-swiper-slide>
+      <f7-swiper-slide><div :data-background="title_ad" class="home-swiper lazy"></div></f7-swiper-slide>
       <f7-swiper-slide><div :data-background="title_ad" class="lazy"></div></f7-swiper-slide>
       <f7-swiper-slide><div :data-background="title_ad" class="lazy"></div></f7-swiper-slide>
     </f7-swiper>
@@ -34,7 +34,7 @@
           <div v-on:click="jumpToProduct">
             <img :src="product_img" class="product-img">
             <div class="product-title">product example{{item}}</div>
-            <div class="product-price">$200</div>
+            <div class="product-price">$&nbsp;5</div>
           </div>
         </f7-block>
       </f7-col>
@@ -109,16 +109,18 @@ export default {
 </script>
 
 <style>
+  .home-swiper{
+    height: 12rem;
+    background-size: 100% auto;
+    background-repeat: no-repeat;
+  }
   .content-block {
-    margin: 20px 0;
+    margin: 20px auto;
     padding: 0;
     text-align: center;  
   }
   .product-title{ 
     padding-bottom: 5px;
-  }
-  .page-content{
-    padding-top: 44px;
   }
   .product-img{
     height: 10rem;
