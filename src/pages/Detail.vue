@@ -1,19 +1,24 @@
 <template>
-  <f7-page toolbar-fixed navbar-fixed>
+  <f7-page name="detail" toolbar-fixed navbar-fixed class="detail-page">
 
+    <!-- 商品动画图标，用于从商品列表跳转到详情页面 -->
+    <img :src="temp_img" class="shadow-img" :style="shadow_img_css"></img>
+    
+    <!-- 详细商品页面 -->
     <!-- Navbar -->
-    <f7-navbar back-link="Back">
-
+    <f7-navbar>
+      <f7-nav-left>
+        <f7-link icon-f7="chevron_left" back></f7-link>
+      </f7-nav-left>
     </f7-navbar>
 
-    <!-- Page Content -->
-    
-    <f7-swiper>
+    <!-- Page Content -->    
+    <f7-swiper class="detail">
       <f7-swiper-slide v-for="img in detail_imgs" :key="img"><div :data-background="img" class="detail-swiper lazy"></div></f7-swiper-slide>
     </f7-swiper>
 
     <!-- Search-through list -->
-    <f7-list class="detail-section-top">
+    <f7-list class="detail-section-top detail">
       <f7-list-item>
         <f7-block>
           <div class="detail-title">进口榉木T形煎饼推</div>
@@ -48,14 +53,14 @@
       </f7-list-item>
     </f7-list>
 
-    <f7-toolbar>
+    <f7-toolbar class="detail">
       <f7-grid class="detail-operation" no-gutter>
-        <f7-col width="20"><f7-button big class="custom-service">empty</f7-button></f7-col>
+        <f7-col width="20"><f7-button big class="custom-service"><f7-link icon-f7="share"></f7-link></f7-button></f7-col>
         <f7-col width="40"><f7-button big class="buy">立即购买</f7-button></f7-col>
-        <f7-col width="40"><f7-button big class="add-to-cart">加入购物车</f7-button></f7-col>
-        <f7-link>fewg</f7-link>
+        <f7-col width="40"><f7-button big class="add-to-cart">加入购物车</f7-button></f7-col>    
       </f7-grid>
     </f7-toolbar>
+
   </f7-page>
 </template>
 
@@ -81,19 +86,79 @@ export default {
           return it;
         })(),
         detail_imgs: detail_imgs,
-        service_info: service_info
+        service_info: service_info,
+        temp_img: '',
+        img_init_loc:{
+          position: 'absolute'
+        },
+        temp_img: '',
+        shadow_img_css:{
+          top:'0px',
+          left:'0px',
+          width:'10rem',
+          height: '10rem',
+          position:'absolute'
+        }
       }
     },
     methods: {
-      
+      iniImgLoc:function(loc){
+
+      },
+      fetchProductsDetail: function () {
+        setTimeout(()=>{
+          
+        }, 1000);
+      },
     },
-    mounted: function(){
+    created: function(){
+      console.log(this.$route.url);
+      var x = this.$route.query.x,
+          y = this.$route.query.y,
+          src = this.$route.query.src;
       
+      this.shadow_img_css.top = y+'px';
+      this.shadow_img_css.left = x+'px';
+      this.temp_img = src;
+      
+//
+//      console.log(x,y,w,h);
+//
+//      this.shadow_img_css.top = y+'px';
+//      this.shadow_img_css.left = x+'px';
+//      this.shadow_img_css.width = w+'px';
+//      this.shadow_img_css.height = h+'px';
+//      this.temp_img = fromDom.attr("src");
+//
+      var to_x = 0,
+          to_y = 44,
+          to_w = this.$$(".swiper-container").width(),
+          to_h = this.$$(".swiper-container").height();
+      
+      console.log(to_x,to_y,to_w,to_h);
+
+      Velocity(
+        this.$$('.shadow-img')
+        ,{ 
+          translateX: to_x-x,
+          translateY: to_y-y,
+          width: to_w,
+          height: to_h
+        }, {
+          complete:function(elements){
+            transDom.hide();
+            detailDom.show();
+          }
+        }
+      );
     }
   }
 </script>
 
 <style>
+  .detail{
+    display: none;
+  }
   /*
     导航栏
   */
@@ -101,7 +166,7 @@ export default {
   /*
     商品图片展示区
   */
-  
+ 
   .detail-swiper{
     height: 26rem;
     background-size: 100% auto;
@@ -125,16 +190,6 @@ export default {
   .style-choose,.sale-info,.service-list{
     font-size: .8rem;
     width: 100%;
-  }
-  .service-iter:after{
-    content: "";
-    position: absolute;
-    width: .10667rem;
-    height: .10667rem;
-    background: #b4282d;
-    border-radius: 100%;
-    left: -.18667rem;
-    top: .13333rem;
   }
   
   /*

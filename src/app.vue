@@ -114,13 +114,6 @@
 <script>
   
 export default {
-    methods: {
-      jumpToProduct: function (event) {
-        alert("click");
-      },
-      doSearch: function (event) {
-        alert("searching");
-      }
-    }
+
   }
 </script>

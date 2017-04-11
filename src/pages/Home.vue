@@ -1,8 +1,9 @@
 <template>
-  <f7-page navbar-fixed pull-to-refresh @ptr:refresh="onRefresh" @ptr:done="refreshDone" infinite-scroll @infinite="onInfiniteScroll">
+  <f7-page name="home" navbar-fixed toolbar-fixed pull-to-refresh @ptr:refresh="onRefresh" @ptr:done="refreshDone" infinite-scroll @infinite="onInfiniteScroll">
 
+    <!-- 商品列表页面 -->
     <!-- Navbar -->
-    <f7-navbar>
+    <f7-navbar class="home">
       <f7-nav-left>
         <f7-link icon="icon-bars" open-panel="left"></f7-link>
       </f7-nav-left>
@@ -20,25 +21,25 @@
 
     <!-- Page Content -->
     
-    <f7-swiper pagination>
+    <f7-swiper pagination class="home">
       <f7-swiper-slide><div :data-background="title_ad" class="home-swiper lazy"></div></f7-swiper-slide>
-      <f7-swiper-slide><div :data-background="title_ad" class="lazy"></div></f7-swiper-slide>
-      <f7-swiper-slide><div :data-background="title_ad" class="lazy"></div></f7-swiper-slide>
+      <f7-swiper-slide><div :data-background="title_ad" class="home-swiper lazy"></div></f7-swiper-slide>
+      <f7-swiper-slide><div :data-background="title_ad" class="home-swiper lazy"></div></f7-swiper-slide>
     </f7-swiper>
 
     <!-- Search-through list -->
 
-    <f7-grid class="product-list">
-      <f7-col v-for="item in items" :key="item" width="50" tablet-width="25">
+    <f7-grid class="product-list home">
+      <f7-col v-for="item in items" :key="item" width="50" tablet-width="25" >
         <f7-block inset>
-          <div v-on:click="jumpToProduct">
-            <img :src="product_img" class="product-img">
+          <div v-on:click="toDetail(item)">
+            <img :src="product_img" class="product-img" :id="'product-img-'+item">
             <div class="product-title">product example{{item}}</div>
             <div class="product-price">$&nbsp;5</div>
           </div>
         </f7-block>
       </f7-col>
-    </f7-grid>
+    </f7-grid> 
 
   </f7-page>
 </template>
@@ -47,9 +48,20 @@
   let img = require('../assets/example.png');
   let title_ad = require('../assets/title_ad.jpg');
   let products = new Array();
+  let detail_imgs = [
+    require('../assets/detail_img1.png'),
+    require('../assets/detail_img2.jpg'),
+    require('../assets/detail_img3.jpg'),
+    require('../assets/detail_img4.jpg'),
+    require('../assets/detail_img5.jpg')];
+  
+  let service_info = ["30天无忧退货", 
+                      "48小时快速退款", 
+                      "满88元免邮费", 
+                      "自营品牌"];
+  
         
 export default {
-  
     data: function () {
       return {
         product_img:img,
@@ -62,7 +74,9 @@ export default {
         items: [],
         loading: false,
         page: 0,
-        itemPerPage: 10
+        itemPerPage: 10,
+        detail_imgs: detail_imgs,
+        service_info: service_info
       }
     },
     methods: {
@@ -72,8 +86,14 @@ export default {
           this.items.push(...this.products.slice(this.itemPerPage*this.page,this.itemPerPage*(this.page+1)));
         }, 1000);
       },
-      jumpToProduct: function (event) {
-        this.$router.load({url: '/detail/'})
+      toDetail: function (item) {
+        var fromDom = this.$$("#product-img-"+item);
+        var x = fromDom.offset().left,
+            y = fromDom.offset().top,
+            src = fromDom.attr('src');
+        
+        var url = '/detail/?x='+x+'&y='+y+'&src='+src;
+        this.$router.load({url:url, animatePages:false});
       },
       doSearch: function (event) {
         alert("searching");
@@ -109,6 +129,7 @@ export default {
 </script>
 
 <style>
+
   .home-swiper{
     height: 12rem;
     background-size: 100% auto;
@@ -124,5 +145,7 @@ export default {
   }
   .product-img{
     height: 10rem;
+    z-index: 999;
   }
+
 </style>
