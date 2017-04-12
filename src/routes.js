@@ -22,5 +22,9 @@ export default [
   {
       path: '/detail/',
       component: require('./pages/Detail.vue')
+  },
+  {
+      path: '/cart/',
+      component: require('./pages/Cart.vue')
   }
 ]

@@ -13,3 +13,11 @@ Your custom styles go here
 .page{
   background-color: #fff;
 }
+
+.text-left{
+  text-align: left;
+}
+
+.text-center{
+  text-align: center;
+}

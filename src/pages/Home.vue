@@ -87,16 +87,19 @@ export default {
         }, 1000);
       },
       toDetail: function (item) {
-        var fromDom = this.$$("#product-img-"+item);
+        var fromDom = this.$$('#product-img-'+item);
         var x = fromDom.offset().left,
             y = fromDom.offset().top,
             src = fromDom.attr('src');
         
         var url = '/detail/?x='+x+'&y='+y+'&src='+src;
-        this.$router.load({url:url, animatePages:false});
-      },
-      doSearch: function (event) {
-        alert("searching");
+        if(this.$$('div[data-page=detail]').length!=0){
+          console.log(1);
+          this.$router.load({pageName:'detail', animatePages:false ,query:{x:x, y:y, src:src}});
+        }else{
+          console.log(2);
+          this.$router.load({url:'detail', animatePages:false, query:{x:x, y:y, src:src}});
+        }
       },
       onRefresh: function (event) {
         // 下拉刷新事件
@@ -119,11 +122,11 @@ export default {
         this.loading = true
         // Reset loading flag
         this.page++;
-        this.fetchProducts(); 
+        this.fetchProducts();
       }
     },
     created: function(){
-      this.fetchProducts(); 
+      this.fetchProducts();
     }
   }
 </script>
