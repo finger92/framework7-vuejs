@@ -1,9 +1,9 @@
 <template>
-  <f7-page name="home" navbar-fixed toolbar-fixed pull-to-refresh @ptr:refresh="onRefresh" @ptr:done="refreshDone" infinite-scroll @infinite="onInfiniteScroll">
+  <f7-page name="home" pull-to-refresh @ptr:refresh="onRefresh" @ptr:done="refreshDone" infinite-scroll @infinite="onInfiniteScroll">
 
     <!-- 商品列表页面 -->
     <!-- Navbar -->
-    <f7-navbar class="home">
+    <f7-navbar>
       <f7-nav-left>
         <f7-link icon="icon-bars" open-panel="left"></f7-link>
       </f7-nav-left>
@@ -21,20 +21,17 @@
 
     <!-- Page Content -->
     
-    <f7-swiper pagination class="home">
-      <f7-swiper-slide><div :data-background="title_ad" class="home-swiper lazy"></div></f7-swiper-slide>
-      <f7-swiper-slide><div :data-background="title_ad" class="home-swiper lazy"></div></f7-swiper-slide>
-      <f7-swiper-slide><div :data-background="title_ad" class="home-swiper lazy"></div></f7-swiper-slide>
+    <f7-swiper pagination>
     </f7-swiper>
 
-    <!-- Search-through list -->
+    <!-- Products list -->
 
-    <f7-grid class="product-list home">
-      <f7-col v-for="item in items" :key="item" width="50" tablet-width="25" >
+    <f7-grid class="product-list">
+      <f7-col v-for="item in items" :key="item.id" width="50" tablet-width="25" >
         <f7-block inset>
-          <div v-on:click="toDetail(item)">
-            <img :src="product_img" class="product-img" :id="'product-img-'+item">
-            <div class="product-title">product example{{item}}</div>
+          <div v-on:click="toDetail(item.id)">
+            <img :src="item.img" class="product-img" :id="'product-img-'+item.id">
+            <div class="product-title">product example{{item.id}}</div>
             <div class="product-price">$&nbsp;5</div>
           </div>
         </f7-block>
@@ -45,70 +42,66 @@
 </template>
 
 <script>
-  let img = require('../assets/example.png');
-  let title_ad = require('../assets/title_ad.jpg');
-  let products = new Array();
-  let detail_imgs = [
-    require('../assets/detail_img1.png'),
-    require('../assets/detail_img2.jpg'),
-    require('../assets/detail_img3.jpg'),
-    require('../assets/detail_img4.jpg'),
-    require('../assets/detail_img5.jpg')];
   
-  let service_info = ["30天无忧退货", 
-                      "48小时快速退款", 
-                      "满88元免邮费", 
-                      "自营品牌"];
+  import { mapGetters } from 'vuex'
   
-        
-export default {
+  export default {
     data: function () {
       return {
-        product_img:img,
-        title_ad:title_ad,
-        products: (() => {
-          var it = [];
-          for (var i = 0; i < 100; i++) it.push(i+1);
-          return it;
-        })(),
-        items: [],
-        loading: false,
         page: 0,
-        itemPerPage: 10,
-        detail_imgs: detail_imgs,
-        service_info: service_info
+        loading: false,
       }
     },
+    watch: {
+      ads: function(newValue, oldValue) {
+        console.log(newValue);
+        var swiper = this.$$('.swiper-container')[0].swiper;
+        for(var it of newValue){
+          swiper.appendSlide('<div class="swiper-slide"><img src="'+it.img+'" class="home-swiper"></img></div>');
+        }
+        console.log(swiper);
+      }
+    },
+    computed: {
+      ...mapGetters({
+        items: 'allProducts',
+        ads: 'allAdvertise'
+      })
+    },
     methods: {
-      fetchProducts: function () {
-        setTimeout(()=>{
-          this.loading = false;
-          this.items.push(...this.products.slice(this.itemPerPage*this.page,this.itemPerPage*(this.page+1)));
-        }, 1000);
+      fetchProducts: function (from, cb) {
+        
+        if(from=='refresh'){
+          this.page = 0;
+          this.$store.dispatch('getAdvertise',()=>{
+            
+          });
+          this.$store.dispatch('getProducts',{page:this.page, from:from, cb:cb});
+        }
+        if(from=='scroll'){
+          this.page++;
+          this.$store.dispatch('getProducts',{page:this.page, from:from, cb:cb});
+        }
       },
-      toDetail: function (item) {
-        var fromDom = this.$$('#product-img-'+item);
+      toDetail: function (id) {
+        console.log(this.$$('.view-main')[0].f7View.history);
+        var fromDom = this.$$('#product-img-'+id);
         var x = fromDom.offset().left,
             y = fromDom.offset().top,
             src = fromDom.attr('src');
         
-        var url = '/detail/?x='+x+'&y='+y+'&src='+src;
-        if(this.$$('div[data-page=detail]').length!=0){
-          console.log(1);
-          this.$router.load({pageName:'detail', animatePages:false ,query:{x:x, y:y, src:src}});
-        }else{
-          console.log(2);
-          this.$router.load({url:'detail', animatePages:false, query:{x:x, y:y, src:src}});
-        }
+        this.cur_item = '#product-img-'+id;
+        var url = '/detail/?id='+id+'&anim='+x+'_'+y+'_'+src;
+        this.$router.load({url:url, animatePages:false});
       },
       onRefresh: function (event) {
         // 下拉刷新事件
         console.log("freshing");
         
-        this.fetchProducts(); 
-        setTimeout(()=>{
-          this.$f7.pullToRefreshDone()
-        }, 2000);
+        this.fetchProducts('refresh',()=>{
+          console.log("load complete");
+          this.$f7.pullToRefreshDone();
+        });
       },
       refreshDone: function (event) {
         // 下来刷新完成事件
@@ -121,12 +114,14 @@ export default {
         // Set loading flag
         this.loading = true
         // Reset loading flag
-        this.page++;
-        this.fetchProducts();
+        this.fetchProducts('scroll',()=>{
+          console.log("load complete");
+          this.loading = false;
+        });
       }
     },
     created: function(){
-      this.fetchProducts();
+      this.fetchProducts('refresh');
     }
   }
 </script>
@@ -134,9 +129,12 @@ export default {
 <style>
 
   .home-swiper{
+/*
     height: 12rem;
     background-size: 100% auto;
     background-repeat: no-repeat;
+*/
+    width:100%;
   }
   .content-block {
     margin: 20px auto;

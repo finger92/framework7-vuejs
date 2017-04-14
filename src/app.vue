@@ -56,8 +56,8 @@
     </f7-panel>
 
     <!-- Main Views -->
-    <f7-views navebar-through>
-      <f7-view id="main-view" main url="/home/"></f7-view>
+    <f7-views>
+      <f7-view id="main-view" navbar-fixed toolbar-fixed main url="/home/"></f7-view>
     </f7-views>
 
     <f7-toolbar tabbar>
@@ -113,7 +113,7 @@
 
 <script>
   
-export default {
+  export default {
 
   }
 </script>

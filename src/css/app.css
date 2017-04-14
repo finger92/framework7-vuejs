@@ -21,3 +21,7 @@ Your custom styles go here
 .text-center{
   text-align: center;
 }
+
+.page.cached {
+    display: block;
+}

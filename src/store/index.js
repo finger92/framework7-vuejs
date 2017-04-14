@@ -4,6 +4,7 @@ import * as actions from './actions'
 import * as getters from './getters'
 import cart from './modules/cart'
 import products from './modules/products'
+import advertisements from './modules/advertisements'
 import createLogger from '../../src/plugins/logger'
 
 Vue.use(Vuex)
@@ -15,7 +16,8 @@ export default new Vuex.Store({
   getters,
   modules: {
     cart,
-    products
+    products,
+    advertisements
   },
   strict: debug,
   plugins: debug ? [createLogger()] : []

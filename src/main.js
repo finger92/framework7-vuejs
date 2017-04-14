@@ -44,7 +44,10 @@ new Vue({
     /* Uncomment to enable Material theme: */
     //material: true,
     routes: Routes,
-    pushState: true
+    allowDuplicateUrls: true,
+    onPageReinit: function(app,page){
+      console.log(app,page);
+    }
   },
   // Register App Component
   components: {
